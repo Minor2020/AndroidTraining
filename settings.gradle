@@ -1,3 +1,7 @@
 include ':app'
 rootProject.name='mvvm'
-include ':lib-mock'
+//include ':lib-sample'
+include ':lib-okhttp'
+include ':lib-eventbus'
+include ':lib-fresco'
+include ':lib-style'

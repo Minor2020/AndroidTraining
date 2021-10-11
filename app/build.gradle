@@ -5,15 +5,25 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.umbrella.training.mvvm"
-        minSdkVersion 23
-        targetSdkVersion 29
+        minSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    // 修复 bug No static method metafactory https://stackoverflow.com/questions/59448845/no-static-method-metafactory/59448917
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -30,11 +40,16 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation(project(path: ':lib-sample'))
+    implementation(project(path: ':lib-okhttp'))
+    implementation(project(path: ':lib-eventbus'))
+    implementation(project(path: ':lib-fresco'))
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation (name: 'BleReaderApi_release', ext: 'aar')
+    implementation (name: 'BleReaderApi', ext: 'aar')
+    implementation 'com.google.android.material:material:1.3.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
