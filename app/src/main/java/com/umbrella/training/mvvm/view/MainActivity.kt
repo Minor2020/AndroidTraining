@@ -15,10 +15,8 @@ import com.umbrella.training.okhttp.DownloadFile
 import com.umbrella.training.okhttp.SIMPLE_URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     private var tipsView: TextView? = null
@@ -45,9 +43,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initListener() {
         downloadEntrance?.setOnClickListener {
-            dirFile?.let {
-                mainViewModel.downloadFile(it)
-            }
+//            dirFile?.let {
+//                mainViewModel.downloadFile(it)
+//            }
             mainViewModel.progress.postValue("begin download.")
             lifecycleScope.launch(Dispatchers.IO) {
                 getImgUrlFromRawFile()
@@ -70,16 +68,16 @@ class MainActivity : AppCompatActivity() {
     private fun getImgUrlFromRawFile() {
         try {
             val inputStream = resources.openRawResource(R.raw.heic_comp)
-            val inputStreamReader = InputStreamReader(inputStream, "UTF-8")
-            val bufferReader = BufferedReader(inputStreamReader)
-            var rawLine = ""
-            while (bufferReader.readLine().also { rawLine = it } != null) {
-                imgUrlList.add(rawLine.substring(rawLine.indexOf(' ') + 1))
+            inputStream.bufferedReader().useLines { lines ->
+                lines.forEach {  rawLine ->
+                    imgUrlList.add(rawLine.substring(rawLine.indexOf(' ') + 1))
+                }
             }
+            mainViewModel.progress.postValue("imgUrlListSize ${imgUrlList.size}")
+            inputStream.close()
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
-
         }
     }
 }
