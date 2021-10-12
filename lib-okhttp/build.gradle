@@ -40,6 +40,7 @@ dependencies {
 
     // okhttp 引入
     implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
 
     testImplementation 'junit:junit:4.+'
