@@ -5,11 +5,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.umbrella.training.mvvm"
-        minSdkVersion 29
-        targetSdkVersion 30
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -41,13 +41,11 @@ repositories {
 dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    implementation(project(path: ':lib-sample'))
     implementation(project(path: ':lib-okhttp'))
     implementation(project(path: ':lib-eventbus'))
     implementation(project(path: ':lib-fresco'))
+    implementation(project(path: ':lib-native'))
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    // 协程框架
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     // lib 目录下的 aar 包
     implementation (name: 'BleReaderApi', ext: 'aar')
     // ViewModel
@@ -62,6 +60,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     // Kotlin
     implementation("androidx.activity:activity-ktx:1.3.1")
+    implementation("androidx.fragment:fragment-ktx:1.3.6")
+
 
     implementation 'androidx.core:core-ktx:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

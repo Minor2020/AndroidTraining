@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.MainActivity">
+    <SurfaceView
+        android:id="@+id/surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -35,7 +39,37 @@
             android:text="DOWNLOAD"
             android:background="@color/colorPrimary"/>
 
-    </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/m_bt_decode_h265"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:text="Decode_h265"
+            android:background="@color/colorPrimary"/>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/m_bt_json"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:text="JSON*STR"
+            android:background="@color/colorPrimary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/m_bt_fragment_dialog"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:text="fdialog"
+            android:background="@color/colorPrimary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/m_bt_cmake"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:text="CMAKE"
+            android:background="@color/colorPrimary"/>
+    </LinearLayout>
 
 </merge>
