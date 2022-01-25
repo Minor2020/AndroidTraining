@@ -50,7 +50,7 @@ object InfoRepository {
 
     suspend fun loadFirstInfo() : String  = withContext(Dispatchers.Default) {
         // 模拟 CPU 计算
-        delay(3000)
+        delay(1000)
         // 返回计算结果
         "first + "
     }
@@ -58,10 +58,12 @@ object InfoRepository {
     suspend fun loadSecondInfo(callback: ResultCallback?) {
         withContext(Dispatchers.IO) {
             // 模拟网络请求
-            delay(1000)
+            delay(2000)
             val res = "second"
-            // 网络请求后的回调
-            callback?.onSuccess(res)
+            // 网络请求后的回调, 抛到UI线程
+            withContext(Dispatchers.Main) {
+                callback?.onSuccess(res)
+            }
         }
     }
 }

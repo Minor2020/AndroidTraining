@@ -1,19 +1,20 @@
 package com.umbrella.training.mvvm.view
 
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Editable
-import android.text.InputFilter
-import android.text.Selection
-import android.text.TextWatcher
+import android.text.*
+import android.text.method.LinkMovementMethod
+import android.text.style.*
 import android.util.Log
 import android.view.Gravity.BOTTOM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.umbrella.training.mvvm.R
@@ -36,7 +37,25 @@ class CustomDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_custom_dialog, container, false)
+//        val rootView = inflater.inflate(R.layout.fragment_dialog_container_layout, container, true)
+//        val containerView = rootView.findViewById<FrameLayout>(R.id.fragment_dialog_container)
+
+        var containerView: FrameLayout? = null
+        context?.let {
+            containerView = createFrameLayout(it)
+            containerView?.removeAllViews()
+            containerView?.addView(CustomEditView(it))
+        }
+        return containerView
+    }
+
+    private fun createFrameLayout(context: Context): FrameLayout {
+        return FrameLayout(context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,7 +65,7 @@ class CustomDialogFragment : DialogFragment() {
 
         editView = view.findViewById(R.id.training_edit)
         editView?.filters = arrayOf(InputFilter.LengthFilter(13))
-//    setListener()
+
         val phoneNumberWatcher = PhoneTextWatcher()
             editView?.addTextChangedListener(phoneNumberWatcher)
         phoneNumberWatcher.textChangeCallback = object : TextChangeCallback {
@@ -54,7 +73,7 @@ class CustomDialogFragment : DialogFragment() {
                 Log.d(TAG, "unformatted num $unformatted is valid num $isPhoneNumberValid")
             }
         }
-
+        processProtocolTips()
         viewMode.info.observe(viewLifecycleOwner) {
             msgView?.text = it
         }
@@ -76,24 +95,89 @@ class CustomDialogFragment : DialogFragment() {
         }
     }
 
-    private fun setListener() {
-        editView?.addTextChangedListener(object : TextWatcher {
-            val stringBuilder = StringBuilder()
+    /**
+     *
+     */
+    private fun processProtocolTips() {
+        val spannableString = SpannableString("这是联通协议")
+        val start = 2
+        // 字体颜色
+        val foregroundColorSpan = ForegroundColorSpan(resources.getColor(R.color.colorPrimary, null))
+        spannableString.setSpan(foregroundColorSpan, start, spannableString.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        // 字体大小
+        val absoluteSizeSpan = AbsoluteSizeSpan(60, false)
+        spannableString.setSpan(absoluteSizeSpan, start, spannableString.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        // 垂直居中
+        val verticalCenterSpan = VerticalCenterSpan(60f)
+        spannableString.setSpan(verticalCenterSpan, start, spannableString.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged s$s start$start count$count after$after")
+        // 字体样式（粗）
+        val styleSpanBold = StyleSpan(Typeface.BOLD)
+        spannableString.setSpan(styleSpanBold, start, spannableString.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                Toast.makeText(context, "联通", Toast.LENGTH_LONG).show()
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged s$s start$start before$before count$count")
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.isUnderlineText = false
             }
-
-            override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged s$s")
-            }
-        })
+        }
+        spannableString.setSpan(clickableSpan, start, spannableString.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        msgView?.movementMethod = LinkMovementMethod.getInstance()
+        msgView?.highlightColor = resources.getColor(android.R.color.transparent, null)
+        msgView?.text = spannableString
     }
 }
+
+/**
+ * 局限性，当标记字体小于普通文本时，才会居中
+ */
+class VerticalCenterSpan(val fontSizePx: Float = 0f) : ReplacementSpan() {
+
+    override fun getSize(
+        paint: Paint,
+        text: CharSequence?,
+        start: Int,
+        end: Int,
+        fm: Paint.FontMetricsInt?
+    ): Int {
+        return getCustomTextPaint(paint).measureText(text?.subSequence(start, end).toString()).toInt()
+    }
+
+    override fun draw(
+        canvas: Canvas,
+        text: CharSequence?,
+        start: Int,
+        end: Int,
+        x: Float,
+        top: Int,
+        y: Int,
+        bottom: Int,
+        paint: Paint
+    ) {
+        val subText = text?.subSequence(start, end)
+        val customPaint = getCustomTextPaint(paint)
+        val fontMetricsInt = customPaint.getFontMetricsInt()
+        subText?.let {
+            canvas.drawText(
+                subText.toString(),
+                x,
+                y - ((y + fontMetricsInt.descent + y + fontMetricsInt.ascent) / 2f - (bottom + top) / 2f),
+                customPaint
+            )
+        }
+    }
+
+    private fun getCustomTextPaint(srcPaint: Paint): TextPaint {
+        val paint = TextPaint(srcPaint)
+        paint.textSize = fontSizePx
+        return paint
+    }
+}
+
+
 
 class AsYouTypeFormatter {
     companion object {
@@ -259,21 +343,6 @@ class PhoneTextWatcher : TextWatcher {
         }
         internationalFormatted = internationalFormatted.trim()
         return internationalFormatted
-    }
-
-    private fun stopFormatting() {
-        stopFormatting = true
-        formatter.clear()
-    }
-
-    private fun hasSeparator(s: CharSequence, start: Int, count: Int): Boolean {
-        for (i in 0..start + count) {
-            val c = s[i];
-            if (!isNonSeparator(c)) {
-                return true
-            }
-        }
-        return false
     }
 }
 

@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         }
         fDialogButton?.setOnClickListener {
             CustomDialogFragment().show(supportFragmentManager, CustomDialogFragment.TAG)
+
 //            val phoneNum = "12312341234"
 //            val cuid = "35F5A41ACEDC8BACE071827F6F121263|VAGZEPTKA"
 //            val md5 = EncryptUtil.hash(EncryptUtil.HASH_MD5, cuid.toByteArray(), false)
